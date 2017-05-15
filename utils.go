@@ -55,3 +55,12 @@ func Log(l Logger, err error) {
 		l.Error("Unhandled error", err)
 	}
 }
+
+// CallAndAssign assigns error returned from the function to the err pointer if needed.
+// Usually usefull in defer statements, eg:
+//    CallAndAssign(&err, someFile.Close)
+func CallAndAssign(err *error, f func() error) {
+	if ferr := f(); ferr != nil && err != nil {
+		*err = ferr
+	}
+}
