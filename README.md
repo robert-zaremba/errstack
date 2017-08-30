@@ -13,7 +13,7 @@ In software we have 3 types of errors:
 * Domain - this is the type of errors when we detect that our internal application state is wrong.
 * Request - a user request error.
 
-Request errors maps parameters (or input data fields) to the explanation (why the value of wrong).
+Request errors maps parameters (application inputs) to the cause description (why the value of wrong).
 
 Domain errors usually arise form some model bug or unhandled condition.
 

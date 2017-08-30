@@ -10,9 +10,10 @@ func (i *infrastructure) WithMsg(msg string) E {
 	return &infrastructure{i.withMsg(msg)}
 }
 
-// Inf implements errstack.E interface
-func (i *infrastructure) Inf() bool {
-	return true
+// IsReq is false for Infrastructure errors.
+// It implements errstack.E interface
+func (i *infrastructure) IsReq() bool {
+	return false
 }
 
 // MarshalJSON implements Marshaller

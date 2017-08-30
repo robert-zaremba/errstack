@@ -24,9 +24,10 @@ func (r *request) Error() string {
 	return r.msg()
 }
 
-// Inf implements errstack.E interface
-func (r *request) Inf() bool {
-	return false
+// IsReq is true for Request errors.
+// It implements errstack.E interface
+func (r *request) IsReq() bool {
+	return true
 }
 
 func (r *request) Stacktrace() *stack.Multi {

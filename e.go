@@ -13,7 +13,7 @@ import (
 type E interface {
 	error
 	json.Marshaler
-	Inf() bool
+	IsReq() bool
 	WithMsg(string) E
 	Stacktrace() *stack.Multi
 }

@@ -13,9 +13,10 @@ func (r *simpleRequest) WithMsg(msg string) E {
 	return &simpleRequest{r.withMsg(msg)}
 }
 
-// Inf implements errstack.E interface
-func (r *simpleRequest) Inf() bool {
-	return false
+// IsReq is true for Request errors.
+// It implements errstack.E interface
+func (r *simpleRequest) IsReq() bool {
+	return true
 }
 
 func newSimpleRequest(e error, d string, skip int) E {
