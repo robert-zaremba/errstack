@@ -15,6 +15,11 @@ func (rp *StubPutter) Fork(prefix string) Putter {
 	return rp
 }
 
+// ForkIdx does nothing
+func (rp *StubPutter) ForkIdx(idx int) Putter {
+	return rp
+}
+
 // Put adds new error
 func (rp *StubPutter) Put(i interface{}) {
 	rp.hasError = true

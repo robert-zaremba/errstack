@@ -2,6 +2,7 @@ package errstack
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type chain []interface{}
@@ -12,6 +13,7 @@ const builderSep = "|"
 // Builder is a type to incrementally build set of errors under common key structure
 type Builder interface {
 	Fork(subkey string) Builder
+	ForkIdx(idx int) Builder
 	Put(key string, value interface{})
 	Get(key string) interface{}
 	NotNil() bool
@@ -24,6 +26,7 @@ type Builder interface {
 type Putter interface {
 	Put(interface{})
 	Fork(prefix string) Putter
+	ForkIdx(idx int) Putter
 }
 
 // Append chains errors under the same key
@@ -58,6 +61,11 @@ func (b builder) Fork(prefix string) Builder {
 		prefix = b.prefix + prefix
 	}
 	return builder{b.m, prefix}
+}
+
+// ForkIdx is a handy function to Fork index keys / rows
+func (b builder) ForkIdx(idx int) Builder {
+	return b.Fork(strconv.Itoa(idx))
 }
 
 // Put adds new error. If err already exists under the same key,
@@ -111,4 +119,8 @@ func (bs builderSetter) Fork(key string) Putter {
 		key = bs.key + ":" + key
 	}
 	return builderSetter{key, bs.b}
+}
+
+func (bs builderSetter) ForkIdx(key int) Putter {
+	return bs.Fork(strconv.Itoa(key))
 }
