@@ -36,10 +36,6 @@ func newErr(e error, s string, skip int) err {
 	return err{e, st, s}
 }
 
-func newErrF(e error, skip int, f string, a ...interface{}) err {
-	return newErr(e, fmt.Sprintf(f, a...), skip+1)
-}
-
 func (e *err) Error() string {
 	if e.message == "" && e.err == nil {
 		return "error"
