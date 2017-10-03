@@ -27,7 +27,7 @@ func (s *ESuite) TestWrapAsReq(c *C) {
 	werr = WrapAsReq(err, "two")
 	b, errm = werr.MarshalJSON()
 	c.Assert(errm, IsNil)
-	c.Assert(string(b), Equals, `{"msg":"two [map[key:details]]"}`)
+	c.Assert(string(b), Equals, "{\"msg\":\"two [key: details\\n]\"}")
 }
 
 func (s *ESuite) TestWrapAsReqF(c *C) {
@@ -49,7 +49,7 @@ func (s *ESuite) TestWrapAsReqF(c *C) {
 	werr = WrapAsReqF(err, "%d", 3)
 	b, errm = werr.MarshalJSON()
 	c.Assert(errm, IsNil)
-	c.Assert(string(b), Equals, `{"msg":"3 [map[key:details]]"}`)
+	c.Assert(string(b), Equals, "{\"msg\":\"3 [key: details\\n]\"}")
 }
 
 func (s *ESuite) TestWrapAsInf(c *C) {

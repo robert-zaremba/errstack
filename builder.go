@@ -1,6 +1,7 @@
 package errstack
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 )
@@ -43,9 +44,17 @@ func (em errmap) Append(key string, value interface{}) {
 	}
 }
 
+var errmapSep = []byte(": ")
+
 // Error implements error interface
 func (em errmap) Error() string {
-	return fmt.Sprint(map[string]interface{}(em))
+	var buffer bytes.Buffer
+	for k, v := range em {
+		buffer.WriteString(k)
+		buffer.Write(errmapSep)
+		fmt.Fprintln(&buffer, v)
+	}
+	return buffer.String()
 }
 
 type builder struct {
