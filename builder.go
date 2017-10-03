@@ -19,7 +19,7 @@ type Builder interface {
 	Get(key string) interface{}
 	NotNil() bool
 	ToReqErr() E
-	Setter(key string) Putter
+	Putter(key string) Putter
 }
 
 // Putter is an interface which provides a way to set an error abstracting from
@@ -103,8 +103,8 @@ func (b builder) ToReqErr() E {
 	return nil
 }
 
-// Setter returns a Setter which abstract error setting from error key.
-func (b builder) Setter(key string) Putter {
+// Putter returns a Putter which abstract error setting from error key.
+func (b builder) Putter(key string) Putter {
 	return builderSetter{key, b}
 }
 
