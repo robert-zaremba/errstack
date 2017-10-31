@@ -1,5 +1,5 @@
 /*
-Package `errstack` provides a way to augment errors with a functional type and iteratively build new request error.
+Package errstack provides a way to augment errors with a functional type and iteratively build new request error.
 
 In software we have 3 types of errors:
 
