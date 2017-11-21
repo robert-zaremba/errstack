@@ -39,7 +39,8 @@ type Builder interface {
 	// Puts new error under the key. You can put multiple errors under the same key
 	// and they will be agregated
 	Put(key string, value interface{})
-	// Get returns errors under `key`
+	// Get returns errors under `key`. Get is aware about 'prefix' and it will add it
+	// to the the key.
 	Get(key string) interface{}
 
 	// NotNil checks if there are any errors in the builder.
@@ -121,7 +122,7 @@ func (b builder) Put(key string, value interface{}) {
 }
 
 func (b builder) Get(key string) interface{} {
-	return b.m[key]
+	return b.m[b.prefix+key]
 }
 
 func (b builder) NotNil() bool {
