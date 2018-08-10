@@ -7,6 +7,11 @@ import (
 	"github.com/facebookgo/stack"
 )
 
+// HasUnderlying describes entity (usually an error) which has underlying error.
+type HasUnderlying interface {
+	Cause() error
+}
+
 // E is error with more information. It is able to marshall itself to json as response.
 // Result of Error() method should include stacktrace. Therefore it should not be
 // displayed directly to the user
@@ -16,11 +21,6 @@ type E interface {
 	IsReq() bool
 	WithMsg(string) E
 	Stacktrace() *stack.Multi
-}
-
-// HasUnderlying describes entity (usually an error) which has underlying error.
-type HasUnderlying interface {
-	Underlying() error
 }
 
 type errstack struct {
@@ -57,8 +57,8 @@ func (e err) withMsg(msg string) err {
 	}
 }
 
-func (e *err) Underlying() error {
-	return underlying(e.err)
+func (e *err) Cause() error {
+	return Cause(e.err)
 }
 
 func (e *err) Stacktrace() *stack.Multi {
@@ -78,13 +78,28 @@ func (e wrapper) Error() string {
 	return fmt.Sprintf("%s [%s]", e.msg, errmsg)
 }
 
-func (e *wrapper) Underlying() error {
-	return underlying(e.err)
+func (e *wrapper) Cause() error {
+	return Cause(e.err)
 }
 
-func underlying(err error) error {
-	if hasUnderlying, ok := err.(HasUnderlying); ok {
-		return hasUnderlying.Underlying()
+// Cause returns the underlying cause of the error, if possible.
+// An error value has a cause if it implements the following
+// interface:
+//
+//     type HasUnderlying interface {
+//            Cause() error
+//     }
+//
+// If the error does not implement Cause, the original error will
+// be returned. If the error is nil, nil will be returned without further
+// investigation.
+func Cause(err error) error {
+	for err != nil {
+		cause, ok := err.(HasUnderlying)
+		if !ok {
+			break
+		}
+		err = cause.Cause()
 	}
 	return err
 }
