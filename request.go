@@ -12,6 +12,11 @@ type request struct {
 	stacktrace *stack.Multi
 }
 
+func init() {
+	// Fixes error output when printing request.details
+	spew.Config.DisableMethods = true
+}
+
 func (r *request) msg() string {
 	if len(r.details) == 0 {
 		return "requst error"
