@@ -35,6 +35,11 @@ func (r *request) IsReq() bool {
 	return true
 }
 
+// StatusCode return HTTP status code
+func (r *request) StatusCode() int {
+	return 400
+}
+
 func (r *request) Stacktrace() *stack.Multi {
 	return r.stacktrace
 }
@@ -45,7 +50,7 @@ func (r *request) MarshalJSON() ([]byte, error) {
 }
 
 func (r *request) WithMsg(msg string) E {
-	return &simpleRequest{err{
+	return &simpleRequest{errstack{
 		err:        r.details,
 		message:    msg,
 		stacktrace: r.stacktrace,

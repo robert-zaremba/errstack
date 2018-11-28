@@ -6,7 +6,7 @@ import (
 )
 
 type simpleRequest struct {
-	err
+	errstack
 }
 
 func (r *simpleRequest) WithMsg(msg string) E {
@@ -17,6 +17,14 @@ func (r *simpleRequest) WithMsg(msg string) E {
 // It implements errstack.E interface
 func (r *simpleRequest) IsReq() bool {
 	return true
+}
+
+// StatusCode return HTTP status code
+func (r *simpleRequest) StatusCode() int {
+	if s, ok := r.errstack.err.(HasStatusCode); ok {
+		return s.StatusCode()
+	}
+	return 400
 }
 
 func newSimpleRequest(e error, d string, skip int) E {

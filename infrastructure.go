@@ -1,9 +1,12 @@
 package errstack
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 type infrastructure struct {
-	err
+	errstack
 }
 
 func (i *infrastructure) WithMsg(msg string) E {
@@ -16,8 +19,19 @@ func (i *infrastructure) IsReq() bool {
 	return false
 }
 
+// StatusCode return HTTP status code
+func (i *infrastructure) StatusCode() int {
+	if s, ok := i.errstack.err.(HasStatusCode); ok {
+		return s.StatusCode()
+	}
+	return 500
+}
+
 // MarshalJSON implements Marshaller
 func (i *infrastructure) MarshalJSON() ([]byte, error) {
+	if m, ok := i.errstack.err.(json.Marshaler); ok {
+		return m.MarshalJSON()
+	}
 	return []byte(`"Internal server error"`), nil
 }
 

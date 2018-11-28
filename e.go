@@ -12,15 +12,26 @@ type HasUnderlying interface {
 	Cause() error
 }
 
+// HasStatusCode provides a function to return the HTTP status code.
+type HasStatusCode interface {
+	StatusCode() int
+}
+
+// HasStacktrace provides a function to return the the root stacktrace
+type HasStacktrace interface {
+	Stacktrace() *stack.Multi
+}
+
 // E is error with more information. It is able to marshall itself to json as response.
 // Result of Error() method should include stacktrace. Therefore it should not be
 // displayed directly to the user
 type E interface {
 	error
+	HasStatusCode
+	HasStacktrace
 	json.Marshaler
 	IsReq() bool
 	WithMsg(string) E
-	Stacktrace() *stack.Multi
 }
 
 type errstack struct {
@@ -29,39 +40,34 @@ type errstack struct {
 	message    string
 }
 
-type err errstack
-
-func newErr(e error, s string, skip int) err {
+func newErr(e error, s string, skip int) errstack {
 	st := stack.CallersMulti(skip + 1)
-	return err{e, st, s}
+	return errstack{e, st, s}
 }
 
-func (e *err) Error() string {
-	if e.message == "" && e.err == nil {
-		return "error"
-	}
-	if e.err == nil {
-		return e.message
-	}
-	if e.message == "" {
-		return e.err.Error()
+func (e *errstack) Error() string {
+	var message = e.message
+	if message == "" {
+		message = "error"
 	}
 	return fmt.Sprintf("%s [%s]", e.message, e.err.Error())
 }
 
-func (e err) withMsg(msg string) err {
-	return err{
+func (e errstack) withMsg(msg string) errstack {
+	return errstack{
 		err:        wrapper{e.message, e.err},
 		message:    msg,
 		stacktrace: e.stacktrace,
 	}
 }
 
-func (e *err) Cause() error {
-	return Cause(e.err)
+// Cause implements HasCause interface
+func (e *errstack) Cause() error {
+	return e.err
 }
 
-func (e *err) Stacktrace() *stack.Multi {
+// Stacktrace returns error creation stacktrace
+func (e *errstack) Stacktrace() *stack.Multi {
 	return e.stacktrace
 }
 
