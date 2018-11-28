@@ -11,16 +11,16 @@ func (rp *StubPutter) HasError() bool {
 }
 
 // Fork does nothing
-func (rp *StubPutter) Fork(prefix string) Putter {
+func (rp *StubPutter) Fork(_ string) Putter {
 	return rp
 }
 
 // ForkIdx does nothing
-func (rp *StubPutter) ForkIdx(idx int) Putter {
+func (rp *StubPutter) ForkIdx(_ int) Putter {
 	return rp
 }
 
 // Put adds new error
-func (rp *StubPutter) Put(i interface{}) {
+func (rp *StubPutter) Put(_ interface{}) {
 	rp.hasError = true
 }
