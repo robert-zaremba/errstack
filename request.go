@@ -9,7 +9,7 @@ import (
 
 type request struct {
 	details    errmap
-	stacktrace *stack.Multi
+	stacktrace stack.Stack
 }
 
 func init() {
@@ -40,7 +40,7 @@ func (r *request) StatusCode() int {
 	return 400
 }
 
-func (r *request) Stacktrace() *stack.Multi {
+func (r *request) Stacktrace() stack.Stack {
 	return r.stacktrace
 }
 
@@ -58,7 +58,7 @@ func (r *request) WithMsg(msg string) E {
 }
 
 func newRequest(m map[string]interface{}, skip int) E {
-	st := stack.CallersMulti(skip + 1)
+	st := stack.Callers(skip + 1)
 	return &request{m, st}
 }
 

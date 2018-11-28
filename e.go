@@ -19,7 +19,7 @@ type HasStatusCode interface {
 
 // HasStacktrace provides a function to return the the root stacktrace
 type HasStacktrace interface {
-	Stacktrace() *stack.Multi
+	Stacktrace() stack.Stack
 }
 
 // E is error with more information. It is able to marshall itself to json as response.
@@ -36,12 +36,12 @@ type E interface {
 
 type errstack struct {
 	err        error
-	stacktrace *stack.Multi
+	stacktrace stack.Stack
 	message    string
 }
 
 func newErr(e error, s string, skip int) errstack {
-	st := stack.CallersMulti(skip + 1)
+	st := stack.Callers(skip + 1)
 	return errstack{e, st, s}
 }
 
@@ -67,7 +67,7 @@ func (e *errstack) Cause() error {
 }
 
 // Stacktrace returns error creation stacktrace
-func (e *errstack) Stacktrace() *stack.Multi {
+func (e *errstack) Stacktrace() stack.Stack {
 	return e.stacktrace
 }
 
@@ -109,3 +109,4 @@ func Cause(err error) error {
 	}
 	return err
 }
+

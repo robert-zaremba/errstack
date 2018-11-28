@@ -21,10 +21,11 @@ func (i *infrastructure) IsReq() bool {
 
 // StatusCode return HTTP status code
 func (i *infrastructure) StatusCode() int {
-	if s, ok := i.errstack.err.(HasStatusCode); ok {
-		return s.StatusCode()
+	s, ok := i.errstack.err.(HasStatusCode)
+	if !ok {
+		return 500
 	}
-	return 500
+	return s.StatusCode()
 }
 
 // MarshalJSON implements Marshaller
