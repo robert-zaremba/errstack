@@ -50,10 +50,11 @@ func (e *errstack) Error() string {
 	if message == "" {
 		message = "error"
 	}
-	if e.err == nil {
-		return e.message
+	errmsg := "nil"
+	if e.err != nil {
+		errmsg = e.err.Error()
 	}
-	return fmt.Sprintf("%s [%s]", e.message, e.err.Error())
+	return fmt.Sprint(message, " [", errmsg, "]")
 }
 
 func (e errstack) withMsg(msg string) errstack {
