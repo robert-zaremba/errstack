@@ -8,6 +8,23 @@ import (
 
 type ESuite struct{}
 
+func (s *ESuite) TestNewReq(c *C) {
+	// New request with no wrapping
+	err := NewReq("error-text")
+	c.Assert(err.Error(), Equals, "error-text")
+
+	// New request
+	nerr := NewReq("one")
+	b, errm := nerr.MarshalJSON()
+	c.Assert(errm, IsNil)
+	c.Assert(string(b), Equals, "{\"msg\":\"one\"}")
+
+	nerr = NewReq("two")
+	b, errm = nerr.MarshalJSON()
+	c.Assert(errm, IsNil)
+	c.Assert(string(b), Equals, "{\"msg\":\"two\"}")
+}
+
 func (s *ESuite) TestWrapAsReq(c *C) {
 	err := errors.New("new error")
 

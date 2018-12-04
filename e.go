@@ -50,6 +50,9 @@ func (e *errstack) Error() string {
 	if message == "" {
 		message = "error"
 	}
+	if e.err == nil {
+		return e.message
+	}
 	return fmt.Sprintf("%s [%s]", e.message, e.err.Error())
 }
 
