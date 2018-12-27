@@ -47,6 +47,8 @@ type Builder interface {
 	NotNil() bool
 	// Converts the Builder into a request error.
 	ToReqErr() E
+	// ToList transforms Builder errors into a list
+	ToList() []ListNode
 }
 
 // Putter is an interface which provides a way to set an error abstracting from
@@ -134,6 +136,25 @@ func (b builder) ToReqErr() E {
 		return newRequest(b.m, 1)
 	}
 	return nil
+}
+
+// ListNode is a representation used by Builder.ToList interface function
+type ListNode struct {
+	key string
+	val interface{}
+}
+
+func (b builder) ToList() []ListNode {
+	if !b.NotNil() {
+		return make([]ListNode, 0)
+	}
+	var l = make([]ListNode, len(b.m))
+	var i = 0
+	for k, v := range b.m {
+		l[i].key = k
+		l[i].val = v
+	}
+	return l
 }
 
 func (b builder) Putter(key string) Putter {
