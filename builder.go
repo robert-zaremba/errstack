@@ -133,7 +133,7 @@ func (b builder) NotNil() bool {
 
 func (b builder) ToReqErr() E {
 	if b.NotNil() {
-		return newRequest(b.m, 1)
+		return newRequest(b.m, "", 1)
 	}
 	return nil
 }

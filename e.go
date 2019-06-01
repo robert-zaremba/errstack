@@ -2,13 +2,13 @@ package errstack
 
 import (
 	"encoding/json"
-	"fmt"
 
 	"github.com/facebookgo/stack"
 )
 
 // HasUnderlying describes entity (usually an error) which has underlying error.
 type HasUnderlying interface {
+	// Cause returns the underlying error (if any) causing the failure.
 	Cause() error
 }
 
@@ -31,84 +31,72 @@ type E interface {
 	HasStacktrace
 	json.Marshaler
 	IsReq() bool
+	Kind() Kind
 	WithMsg(string) E
+	Details() map[string]interface{}
+	Add(key string, payload interface{}) // add more details to the error
 }
 
-type errstack struct {
-	err        error
-	stacktrace stack.Stack
-	message    string
-}
+// Kind defines the kind of error that must act differently depending on the error
+type Kind uint8
 
-func newErr(e error, s string, skip int) errstack {
-	st := stack.Callers(skip + 1)
-	return errstack{e, st, s}
-}
+// Kinds of errors.
+const (
+	Other         Kind = iota // Unclassified error.
+	Invalid                   // Invalid operation for this type of item.
+	Permission                // Permission denied.
+	IO                        // External I/O error such as network failure.
+	Exist                     // Item already exists.
+	NotExist                  // Item does not exist.
+	IsDir                     // Item is a directory.
+	NotDir                    // Item is not a directory.
+	NotEmpty                  // Directory not empty.
+	Private                   // Information withheld.
+	CannotDecrypt             // No wrapped key for user with read access.
+	Transient                 // A transient error.
+	BrokenLink                // Link target does not exist.
+	Request                   // General request error
+	Domain                    // Internal error causing business domain problem or inconsistency
+)
 
-func (e *errstack) Error() string {
-	var message = e.message
-	if message == "" {
-		message = "error"
+// IsKind reports whether err is an *Error of the given Kind.
+// If err is nil then Is returns false.
+func IsKind(kind Kind, err error) bool {
+	e, ok := err.(E)
+	if !ok {
+		return false
 	}
-	if e.err == nil {
-		return message
+	ek := e.Kind()
+	if ek != Other {
+		return ek == kind
 	}
-	return fmt.Sprint(message, " [", e.err.Error(), "]")
-}
-
-func (e errstack) withMsg(msg string) errstack {
-	return errstack{
-		err:        wrapper{e.message, e.err},
-		message:    msg,
-		stacktrace: e.stacktrace,
+	if ecauser, ok := err.(HasUnderlying); ok {
+		err = ecauser.Cause()
+		if err != nil {
+			return IsKind(kind, err)
+		}
 	}
+	return false
 }
 
-// Cause implements HasCause interface
-func (e *errstack) Cause() error {
-	return e.err
-}
-
-// Stacktrace returns error creation stacktrace
-func (e *errstack) Stacktrace() stack.Stack {
-	return e.stacktrace
-}
-
-type wrapper struct {
-	msg string
-	err error
-}
-
-func (e wrapper) Error() string {
-	errmsg := "nil"
-	if e.err != nil {
-		errmsg = e.err.Error()
-	}
-	return fmt.Sprintf("%s [%s]", e.msg, errmsg)
-}
-
-func (e *wrapper) Cause() error {
-	return Cause(e.err)
-}
-
-// Cause returns the underlying cause of the error, if possible.
-// An error value has a cause if it implements the following
-// interface:
+// RootErr returns the underlying cause of the error, if possible.
+// Normally it should be the root error.
+// This method uses `HasUnderlying` interface to extract the cause error.
 //
-//     type HasUnderlying interface {
-//            Cause() error
-//     }
-//
-// If the error does not implement Cause, the original error will
+// If the error does not implement the `HasUnderlying`, the original error will
 // be returned. If the error is nil, nil will be returned without further
 // investigation.
-func Cause(err error) error {
+func RootErr(err error) error {
 	for err != nil {
 		cause, ok := err.(HasUnderlying)
 		if !ok {
 			break
 		}
-		err = cause.Cause()
+		errC := cause.Cause()
+		if errC == nil {
+			return err
+		}
+		err = errC
 	}
 	return err
 }

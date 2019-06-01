@@ -17,8 +17,7 @@ func (s *BuilderSuite) TestPut(c *C) {
 	errR := b.ToReqErr().(*request)
 	c.Assert(errR, NotNil)
 	c.Assert(errR.details, DeepEquals, errmap{"k1": 1})
-	c.Assert(errR.Error(), StrEquals,
-		"(errstack.errmap) (len=1) {\n (string) (len=2) \"k1\": (int) 1\n}\n")
+	c.Assert(errR.Error(), Equals, " k1: 1\n")
 
 	b.Put("k1", 3)
 	b.Put("newkey", 4)
