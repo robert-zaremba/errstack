@@ -21,8 +21,20 @@ func newErr(e error, s string, kind Kind, skip int) *errstack {
 	return &errstack{e, st, s, kind, map[string]interface{}{}}
 }
 
-func New(msg string, kind Kind) *errstack {
+// New creates a new error E
+func New(kind Kind, msg string) E {
 	return newErr(nil, msg, kind, 1)
+}
+
+// Wrap creates new error using error and string message
+func Wrap(err error, kind Kind, msg string) E {
+	if err == nil {
+		return nil
+	}
+	if es, ok := err.(errstack); ok && es.kind == kind {
+		return es.WithMsg(msg)
+	}
+	return newErr(err, msg, kind, 1)
 }
 
 func (e errstack) WithMsg(msg string) E {
