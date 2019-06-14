@@ -45,7 +45,7 @@ const (
 	Other         Kind = iota // Unclassified error.
 	Invalid                   // Invalid operation for this type of item.
 	Permission                // Permission denied.
-	IO                        // External I/O error such as network failure.
+	IO                        // I/O error such as network failure.
 	Exist                     // Item already exists.
 	NotExist                  // Item does not exist.
 	IsDir                     // Item is a directory.
@@ -77,6 +77,10 @@ func IsKind(kind Kind, err error) bool {
 		}
 	}
 	return false
+}
+
+func isReq(kind Kind) bool {
+	return kind == Permission || kind == Exist || kind == NotExist || kind == Private || kind == CannotDecrypt || kind == Request
 }
 
 // RootErr returns the underlying cause of the error, if possible.

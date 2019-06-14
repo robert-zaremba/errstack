@@ -38,7 +38,7 @@ func (s *ESuite) TestWrapAsReq(c *C) {
 	c.Assert(werr.Error(), Equals, "two [one [new error]]")
 	assertMarshal(werr, `{"err":{"err":"new error","msg":"one"},"msg":"two"}`, Request, c)
 
-	// // Wrap request
+	// Wrap request
 	err = NewReqDetails("key", "details", "message")
 	werr = WrapAsReq(err, "two")
 	assertMarshal(werr, `{"err":{"key":"details"},"msg":"two [message]"}`, Request, c)

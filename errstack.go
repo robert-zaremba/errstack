@@ -37,7 +37,7 @@ func (e errstack) WithMsg(msg string) E {
 // IsReq is false for Infrastructure errors.
 // It implements errstack.E interface
 func (e errstack) IsReq() bool {
-	return e.kind == Request
+	return isReq(e.kind)
 }
 
 // Kind implements E interface.
