@@ -5,6 +5,12 @@ stacked error wrappers
 
 Package `errstack` provides a way to augment errors with a functional type and iteratively build new request error.
 
+# How to handle errors?
+
+Rule of thumb:
+
+_An error should be handled only once. Logging an error is handling an error. So an error should either be logged or propagated._
+
 # Motivation
 
 In software we have 3 types of errors:

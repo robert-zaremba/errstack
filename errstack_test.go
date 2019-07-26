@@ -148,3 +148,13 @@ func (s *ESuite) TestIsKind(c *C) {
 	err = WrapAsReq(err, "hi")
 	c.Assert(IsKind(Request, err), Equals, true)
 }
+
+func (s *ESuite) TestAdd(c *C) {
+	var err = New(Request, "error1")
+	err.Add("key1", "details1")
+	err.Add("key1", "details2")
+
+	c.Assert(err.Kind(), Equals, Request)
+	c.Check(err.Error(), Equals, "error1")
+	c.Check(err.Details(), DeepEquals, map[string]interface{}{"key1": "details2"})
+}
