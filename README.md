@@ -33,4 +33,4 @@ It is very handy to know the place (stack) where the error Infrastructure or Dom
 The initial work was done for the [AgFlow](http://www.agflow.com) project.
 
 * [Krzysztof Dryś](https://github.com/krzysztofdrys)
-* [Robert Zaremba](http://scale-it.pl)
+* [Robert Zaremba](https://zaremba.ch)
